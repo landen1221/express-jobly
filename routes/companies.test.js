@@ -96,6 +96,17 @@ describe("GET /companies", function () {
     });
   });
 
+  /************************ Testing GET /companies with query string parameters */
+  test('ok for filtered query string w/ single parameter', async function () {
+    const resp = await request(app).get("/companies?name=C1");
+    expect(resp.body.companies.length).toEqual(1)
+  });
+
+  test('ok for filtered query string w/ multiple parameters', async function () {
+    const resp = await request(app).get("/companies?name=C&minEmployees=2&maxEmployees=5");
+    expect(resp.body.companies.length).toEqual(2)
+  });
+
   test("fails: test next() handler", async function () {
     // there's no normal failure event which will cause this route to fail ---
     // thus making it hard to test that the error-handler works with it. This

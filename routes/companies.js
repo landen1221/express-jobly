@@ -50,10 +50,20 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * Authorization required: none
  */
 
+// 3001/name?fname=Matt&lname=Landen
+
 router.get("/", async function (req, res, next) {
   try {
-    console.log(req.query)
-    const companies = await Company.findAll();
+    let companies;
+    const urlQuery = req.query;
+    
+    if(urlQuery.name || urlQuery.minEmployees || urlQuery.maxEmployees) {
+      delete urlQuery.type;
+      companies = await Company.filterCompanies(urlQuery)
+    } else {
+      companies = await Company.findAll();
+    }
+    
     return res.json({ companies });
   } catch (err) {
     return next(err);
