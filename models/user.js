@@ -142,6 +142,14 @@ class User {
     return user;
   }
 
+  static async getJobs(username) {
+    const { rows } = await db.query(`SELECT job_id from applications WHERE username = $1`, [username])
+
+    if (!rows) throw new NotFoundError(`No user: ${username}`);
+
+    return rows
+  }
+
   /** Update user data with `data`.
    *
    * This is a "partial update" --- it's fine if data doesn't contain
@@ -204,6 +212,17 @@ class User {
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
   }
+
+  static async jobApplication(username, job_id) {
+    let { rows } = await db.query(`INSERT INTO applications
+    (username,
+     job_id)
+    VALUES ($1, $2)
+    RETURNING job_id`, [username, job_id])
+    
+    return rows[0]
+  }
+
 }
 
 

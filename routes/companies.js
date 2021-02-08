@@ -73,13 +73,17 @@ router.get("/", async function (req, res, next) {
  *  Company is { handle, name, description, numEmployees, logoUrl, jobs }
  *   where jobs is [{ id, title, salary, equity }, ...]
  *
+ *  Also retruns array of jobs {id, title, salary, equity, 
+ *  company_handle} associated with company handle
+ * 
  * Authorization required: none
  */
 
 router.get("/:handle", async function (req, res, next) {
   try {
     const company = await Company.get(req.params.handle);
-    return res.json({ company });
+    const jobs = await Company.getCompanyJobs(req.params.handle)
+    return res.json({ company, jobs });
   } catch (err) {
     return next(err);
   }

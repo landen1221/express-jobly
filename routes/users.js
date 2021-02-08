@@ -11,6 +11,7 @@ const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNew.json");
 const userUpdateSchema = require("../schemas/userUpdate.json");
+const { jobApplication } = require("../models/user");
 
 const router = express.Router();
 
@@ -43,6 +44,29 @@ router.post("/", ensureAdmin, async function (req, res, next) {
   }
 });
 
+/** POST to applications table  => { username, job_id }
+ *
+ * User added to table showing jobs they have applied for.
+ *
+ * This returns a simple validation { applied: jobID } 
+ *
+ * Authorization required: login & isAdmin
+ **/
+
+router.post("/:username/jobs/:id", async function (req, res, next) {
+  console.log('entered post request')
+  try {
+    const {username, id } =  req.params
+
+    const applied = await User.jobApplication(username, id)
+
+    return res.json({ applied })
+
+  } catch(err) {
+    return next(err)
+  }
+})
+
 
 /** GET / => { users: [ {username, firstName, lastName, email }, ... ] }
  *
@@ -71,7 +95,10 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
 router.get("/:username", [ensureLoggedIn, ensureAdmin], async function (req, res, next) {
   try {
     const user = await User.get(req.params.username);
-    return res.json({ user });
+    const jobs = await User.getJobs(req.params.username);
+
+    return res.json({ user, appliedJobs: jobs});
+    
   } catch (err) {
     return next(err);
   }

@@ -94,31 +94,35 @@ class Job {
     return job;
   }
 
-  // Automates filtering of companies based on query string
-  // static async filterCompanies(urlQuery) {
-  //     let newQuery = `SELECT * FROM companies WHERE`;
-  //     // if (name) get companies that match query
-  //     let queryCount = 0;
+// TODO:
+/**Automates filtering of companies based on query string 
+ * Valid query strings = minSalary, title, hasEquity
+ */   
+  static async filterJobs(urlQuery) {
+      let newQuery = `SELECT * FROM jobs WHERE`;
+      let queryCount = 0;
 
-  //     for (let key in urlQuery) {
-  //         if (queryCount > 0) {
-  //         newQuery += ` AND `;
-  //         }
-  //         if (key === "name") {
-  //         newQuery += ` LOWER(name) LIKE LOWER('%${urlQuery[key]}%')`;
-  //         }
-  //         if (key === "minEmployees") {
-  //         newQuery += ` num_employees >= ${urlQuery[key]} `;
-  //         }
-  //         if (key === "maxEmployees") {
-  //         newQuery += ` num_employees <= ${urlQuery[key]} `;
-  //         }
-  //         queryCount++;
-  // }
+      for (let key in urlQuery) {
+          if (queryCount > 0) {
+          newQuery += ` AND `;
+          }
+          if (key === "title") {
+          newQuery += ` LOWER(title) LIKE LOWER('%${urlQuery[key]}%')`;
+          }
+          if (key === "equity") {
+          newQuery += ` equity > ${0} `;
+          }
+          if (key === "minSalary") {
+          newQuery += ` salary > ${urlQuery[key]} `;
+          }
+          queryCount++;
+  }
 
-  // const results = await db.query(newQuery);
-  // return results.rows;
-  // }
+  const results = await db.query(newQuery);
+  return results.rows;
+  }
+
+
 }
 
 module.exports = Job;

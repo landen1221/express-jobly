@@ -2,7 +2,7 @@
 
 const jsonschema = require("jsonschema");
 const express = require("express");
-const { BadRequestError } = require("../expressError");
+const { BadRequestError, ExpressError } = require("../expressError");
 const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
 const Job = require("../models/jobs");
 
@@ -11,9 +11,36 @@ const jobUpdateSchema = require("../schemas/jobUpdate.json");
 
 const router = new express.Router();
 
+/** GET /  =>
+ *   { jobs: [ { id, title, salar, equity, company_handle }, ...] }
+ *
+ * Can filter on provided search filters:
+ * - title (will find case-insensitive, partial matches)
+ * - minSalary
+ * - hasEquity (boolean)
+ *
+ * Authorization required: none
+ */
 router.get("/", async function (req, res, next) {
   try {
-    const jobs = await Job.findAll();
+    
+    let jobs;
+    const validQueries = ['type', 'minSalary', 'title', 'hasEquity'];
+    const urlQuery = req.query;
+
+    for (let key in urlQuery) {
+      if (validQueries.indexOf(key) === -1) {
+        throw new ExpressError(`Invalid query: ${key}`, 400)
+      }
+    }
+    
+    if(urlQuery.title || urlQuery.minSalary || urlQuery.hasEquity) {
+      delete urlQuery.type;
+      jobs = await Job.filterJobs(urlQuery)
+    } else {
+      jobs = await Job.findAll();
+    }
+    
 
     return res.json({ jobs });
   } catch (err) {
@@ -85,9 +112,6 @@ router.patch("/:id", async function (req, res, next) {
       return next(err);
     }
 });
-
-
-
 
 /** DELETE job based on id => { deleted: handle }
  *

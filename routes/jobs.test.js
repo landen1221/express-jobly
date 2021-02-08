@@ -46,7 +46,6 @@ describe ("GET /jobs/:id", function() {
       });
 })
 
-
 /************************************** PATCH /jobs/:id */
 
 describe("PATCH /jobs/:id", function () {
@@ -57,7 +56,6 @@ describe("PATCH /jobs/:id", function () {
       expect(resp.body.job.title).toEqual('Salesperson');
     });
 });
-
 
 /************************************** DELETE /jobs/:id */
 describe("DELETE /job/:id", function () {
