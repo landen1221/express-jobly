@@ -3,7 +3,7 @@
 const jsonschema = require("jsonschema");
 const express = require("express");
 const { BadRequestError, ExpressError } = require("../expressError");
-const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
+const { ensureAdmin } = require("../middleware/auth");
 const Job = require("../models/jobs");
 
 const jobNewSchema = require("../schemas/jobNew.json");
@@ -20,14 +20,16 @@ const router = new express.Router();
  * - hasEquity (boolean)
  *
  * Authorization required: none
+ * Example: http://localhost:3001/jobs?minSalary=50000&title=sales&hasEquity=true
  */
+
 router.get("/", async function (req, res, next) {
   try {
     
     let jobs;
     const validQueries = ['type', 'minSalary', 'title', 'hasEquity'];
     const urlQuery = req.query;
-
+    console.log(urlQuery)
     for (let key in urlQuery) {
       if (validQueries.indexOf(key) === -1) {
         throw new ExpressError(`Invalid query: ${key}`, 400)
@@ -71,7 +73,7 @@ router.get("/:id", async function (req, res, next) {
  * Authorization:
  */
 
-router.post("/", async function (req, res, next) {
+router.post("/", ensureAdmin, async function (req, res, next) {
     try {
       const validator = jsonschema.validate(req.body, jobNewSchema);
       if (!validator.valid) {
@@ -98,7 +100,7 @@ router.post("/", async function (req, res, next) {
  * Authorization:
  */
 
-router.patch("/:id", async function (req, res, next) {
+router.patch("/:id", ensureAdmin, async function (req, res, next) {
     try {
         const validator = jsonschema.validate(req.body, jobUpdateSchema);
         if (!validator.valid) {
@@ -118,7 +120,7 @@ router.patch("/:id", async function (req, res, next) {
  * Authorization:
  */
 
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
     await Job.remove(req.params.id);
     return res.json({ deleted: req.params.id });

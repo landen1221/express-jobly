@@ -35,6 +35,13 @@ async function commonBeforeAll() {
     description: "Desc3",
     logoUrl: "http://c3.img",
   });
+  await Company.create({
+    handle: "c4",
+    name: "C4",
+    numEmployees: 4,
+    description: "Desc4",
+    logoUrl: "http://c4.img",
+  });
 
   await User.register({
     username: "u1",
@@ -93,6 +100,7 @@ async function commonAfterAll() {
 }
 
 const u1Token = createToken({ username: "u1", isAdmin: false });
+const adminToken = createToken({username: "admin", isAdmin: true})
 
 module.exports = {
   commonBeforeAll,
@@ -100,4 +108,5 @@ module.exports = {
   commonAfterEach,
   commonAfterAll,
   u1Token,
+  adminToken,
 };

@@ -109,7 +109,7 @@ class Job {
           if (key === "title") {
           newQuery += ` LOWER(title) LIKE LOWER('%${urlQuery[key]}%')`;
           }
-          if (key === "equity") {
+          if (key === "hasEquity") {
           newQuery += ` equity > ${0} `;
           }
           if (key === "minSalary") {

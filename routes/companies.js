@@ -21,7 +21,7 @@ const router = new express.Router();
  *
  * Returns { handle, name, description, numEmployees, logoUrl }
  *
- * Authorization required: login & isAdmin
+ * Authorization required: loggedIn OR isAdmin
  */
 
 router.post("/", ensureAdmin, async function (req, res, next) {
@@ -97,7 +97,7 @@ router.get("/:handle", async function (req, res, next) {
  *
  * Returns { handle, name, description, numEmployees, logo_url }
  *
- * Authorization required: login & isAdmin
+ * Authorization required: loggedIn OR isAdmin
  */
 
 router.patch("/:handle", ensureAdmin, async function (req, res, next) {
